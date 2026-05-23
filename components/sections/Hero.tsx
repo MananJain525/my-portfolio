@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import { HiArrowDown, HiArrowRight, HiMail } from "react-icons/hi";
 import GradientText from "@/components/ui/GradientText";
-import AsciiAvatar from "@/components/ui/AsciiAvatar";
+import BinaryPortrait from "@/components/ui/BinaryPortrait";
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -181,9 +181,9 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Right column — ASCII avatar (desktop only) */}
+          {/* Right column — binary portrait (desktop only) */}
           <div className="hidden lg:flex items-center justify-center">
-            <AsciiAvatar />
+            <BinaryPortrait imageSrc="/profile.png" />
           </div>
 
         </div>
