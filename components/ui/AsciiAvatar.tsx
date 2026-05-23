@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-const COLS = 72;
-// Monospace chars are roughly 1.8× taller than wide — compensate so pixels stay square
-const CHAR_ASPECT = 1.8;
+// High-density grid — more columns = more recognisable face detail
+const COLS = 140;
+// Most browser monospace fonts render chars ~2× taller than wide
+const CHAR_ASPECT = 2.0;
+// Classic ASCII density ramp: index 0 = darkest/densest, last = brightest/sparsest
+const CHARS = "@#8$%&Boahkbdpwm0QLCJUYX zcvunxrjft/|()1?-_+~i!lI;:,. ";
 
 function brightnessToChar(brightness: number): string {
-  if (brightness <= 0.3) return "0";
-  if (brightness <= 0.6) return "1";
-  return ".";
+  const i = Math.floor((1 - brightness) * (CHARS.length - 1));
+  return CHARS[Math.max(0, Math.min(CHARS.length - 1, i))];
 }
 
 export default function AsciiAvatar() {
@@ -20,9 +22,6 @@ export default function AsciiAvatar() {
     const img = new Image();
 
     img.onload = () => {
-      // Create the canvas programmatically — avoids the circular dependency
-      // where the ref-based canvas never mounts because the component returns
-      // null until rows are populated.
       const canvas = document.createElement("canvas");
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
@@ -45,14 +44,8 @@ export default function AsciiAvatar() {
       for (let row = 0; row < numRows; row++) {
         let line = "";
         for (let col = 0; col < numCols; col++) {
-          const px = Math.min(
-            Math.floor(col * blockW + blockW / 2),
-            img.naturalWidth - 1
-          );
-          const py = Math.min(
-            Math.floor(row * blockH + blockH / 2),
-            img.naturalHeight - 1
-          );
+          const px = Math.min(Math.floor(col * blockW + blockW / 2), img.naturalWidth - 1);
+          const py = Math.min(Math.floor(row * blockH + blockH / 2), img.naturalHeight - 1);
           const idx = (py * img.naturalWidth + px) * 4;
 
           const alpha = data[idx + 3];
@@ -73,25 +66,19 @@ export default function AsciiAvatar() {
       setRows(result);
     };
 
-    img.src = "/profile.png";
+    img.src = "/profile2.png";
   }, []);
 
   if (rows.length === 0) return null;
 
   return (
     <motion.div
-      className="relative select-none"
+      className="relative select-none w-full flex items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.2, delay: 0.9 }}
+      transition={{ duration: 1.2, delay: 0.8 }}
     >
-      <div
-        className="font-mono text-[7px] leading-[1.1] text-blue-200/50 whitespace-pre bg-transparent"
-        style={{
-          maskImage: "radial-gradient(circle, black 40%, transparent 70%)",
-          WebkitMaskImage: "radial-gradient(circle, black 40%, transparent 70%)",
-        }}
-      >
+      <div className="font-mono text-[5.5px] leading-[1.15] text-gray-300 whitespace-pre bg-transparent">
         {rows.map((line, i) => (
           <div key={i}>{line}</div>
         ))}
